@@ -41,10 +41,10 @@ class MainContentProvider: ContentProvider() {
     }
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? {
-        if (uri.path != "/log.txt") {
+        val file = File(context!!.getExternalFilesDir(null), uri.path)
+        if (!file.exists()) {
             throw FileNotFoundException()
         }
-        return return ParcelFileDescriptor.open(File(context!!.getExternalFilesDir(null), "log.txt"), MODE_READ_ONLY);
+        return ParcelFileDescriptor.open(file, MODE_READ_ONLY);
     }
-
 }
