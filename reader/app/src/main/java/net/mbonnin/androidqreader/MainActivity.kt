@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.TextView
 import kotlinx.coroutines.*
 import java.io.File
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,8 +19,17 @@ class MainActivity : AppCompatActivity() {
         job = GlobalScope.launch(Dispatchers.Main) {
             val lines = mutableListOf<String>()
 
-            val inputStream = contentResolver.openInputStream(Uri.parse("content://net.mbonnin.androidqwriter.fileprovider/log.txt"))
-                .bufferedReader()
+            val outputStream =
+                contentResolver.openOutputStream(Uri.parse("content://net.mbonnin.androidqwriter.fileprovider/log.config"))
+            outputStream!!.use {
+                val writer = it.writer()
+                writer.write("Hello from reader ${Date()}\n")
+                writer.flush()
+            }
+
+            val inputStream =
+                contentResolver.openInputStream(Uri.parse("content://net.mbonnin.androidqwriter.fileprovider/log.txt"))
+                    .bufferedReader()
             val textView = findViewById<TextView>(R.id.textView)
             var i = 0
             while (true) {

@@ -6,6 +6,8 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.os.ParcelFileDescriptor.MODE_READ_ONLY
+import android.os.ParcelFileDescriptor.MODE_READ_WRITE
+import android.util.Log
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -42,9 +44,15 @@ class MainContentProvider: ContentProvider() {
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? {
         val file = File(context!!.getExternalFilesDir(null), uri.path)
-        if (!file.exists()) {
-            throw FileNotFoundException()
+
+        if (uri.path == "/log.config"){
+            file.createNewFile()
+            return ParcelFileDescriptor.open(file, MODE_READ_WRITE)
+        } else {
+            if (!file.exists()) {
+                throw FileNotFoundException()
+            }
+            return ParcelFileDescriptor.open(file, MODE_READ_ONLY)
         }
-        return ParcelFileDescriptor.open(file, MODE_READ_ONLY);
     }
 }
